@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:login_sqlite/home_login.dart';
+import 'package:login_sqlite/routes/view_routes.dart';
 
 void main() {
-  runApp(const HomeLogin());
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: RoutesApp.home,
+      onGenerateRoute: RoutesApp.generateRoute,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSwatch(
+            primarySwatch: Colors.grey, errorColor: Colors.pink),
+        secondaryHeaderColor: Colors.black,
+      ),
+    ),
+  );
 }
