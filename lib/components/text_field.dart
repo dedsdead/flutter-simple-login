@@ -7,6 +7,7 @@ class FormTextField extends StatelessWidget {
   final TextEditingController controller;
   final TextInputType inputType;
   final bool isObscured;
+  final bool isEnabled;
 
   const FormTextField(
       {super.key,
@@ -14,7 +15,8 @@ class FormTextField extends StatelessWidget {
       required this.icon,
       required this.controller,
       required this.inputType,
-      this.isObscured = false});
+      this.isObscured = false,
+      this.isEnabled = true});
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +40,7 @@ class FormTextField extends StatelessWidget {
           return null;
         },
         obscureText: isObscured,
+        enabled: isEnabled,
         controller: controller,
         decoration: InputDecoration(
           filled: true,

@@ -1,10 +1,6 @@
-import 'dart:convert';
-
-import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:login_sqlite/components/text_field.dart';
 import 'package:login_sqlite/components/user_header.dart';
-import 'package:login_sqlite/model/user_model.dart';
 import 'package:login_sqlite/routes/view_routes.dart';
 
 class HomeLogin extends StatefulWidget {
@@ -56,27 +52,14 @@ class _HomeLoginState extends State<HomeLogin> {
                 ),
                 Container(
                   padding: const EdgeInsets.only(
-                      top: 30, left: 150, right: 150, bottom: 30),
+                      top: 30, left: 80, right: 80, bottom: 30),
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        UserModel user = UserModel(
-                          userId: 'userId',
-                          userName: 'userName',
-                          userEmail: 'userEmail',
-                          userPassword: 'userPassword',
-                        );
-                        // CRIPTOGRAFIA NA SENHA
-                        var bytes = utf8.encode(_senhaController.text);
-                        var hash = sha256.convert(bytes);
-
-                        var route = RouteSettings(
-                            name: RoutesApp.update, arguments: user);
-                        Navigator.pushAndRemoveUntil(
+                        Navigator.pushNamed(
                           context,
-                          RoutesApp.generateRoute(route),
-                          (route) => false,
+                          RoutesApp.update,
                         );
                       }
                     },
@@ -92,9 +75,8 @@ class _HomeLoginState extends State<HomeLogin> {
                     const Text("Não possui uma conta?"),
                     TextButton(
                       onPressed: () {
-                        const route = RouteSettings(name: RoutesApp.signUp);
-                        Navigator.pushAndRemoveUntil(context,
-                            RoutesApp.generateRoute(route), (route) => false);
+                        Navigator.pushAndRemoveUntil(
+                            context,RoutesApp.generateRoute(RouteSettings()),(route) => false);
                       },
                       child: const Text("Cadastre-se"),
                     )
