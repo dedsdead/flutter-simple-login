@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:login_sqlite/common/messages.dart';
 import 'package:login_sqlite/components/text_field.dart';
 import 'package:login_sqlite/components/user_header.dart';
+import 'package:login_sqlite/external/database/bd_sqlite.dart';
+import 'package:login_sqlite/model/user_model.dart';
 import 'package:login_sqlite/routes/view_routes.dart';
 
 class SignUp extends StatefulWidget {
@@ -33,7 +36,7 @@ class _SignUpState extends State<SignUp> {
     super.dispose();
   }
 
-  void _signUp() {
+  void _signUp() async {
     if (_formKey.currentState!.validate()) {
       if (_senhaController.text.trim() != _confirmaController.text.trim()) {
         MessageApp.toastMesssage(
@@ -46,9 +49,29 @@ class _SignUpState extends State<SignUp> {
         var bytes = utf8.encode(_senhaController.text);
         var hash = sha256.convert(bytes);
 
-        const route = RouteSettings(name: RoutesApp.home);
-        Navigator.pushAndRemoveUntil(
-            context, RoutesApp.generateRoute(route), (route) => false);
+        UserModel user = UserModel(
+          userId: _loginController.text,
+          userName: _nomeController.text,
+          userEmail: _emailController.text,
+          userPassword: hash.toString(),
+        );
+
+        SqLiteDb db = SqLiteDb();
+
+        await db.createUser(user).then(
+          (value) {
+            const route = RouteSettings(name: RoutesApp.home);
+            Navigator.pushAndRemoveUntil(
+              context,
+              RoutesApp.generateRoute(route),
+              (route) => false,
+            );
+          },
+        ).catchError(
+          (onError) {
+            log(onError);
+          },
+        );
       }
     }
   }

@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:login_sqlite/common/messages.dart';
 import 'package:login_sqlite/components/text_field.dart';
 import 'package:login_sqlite/components/user_header.dart';
-import 'package:login_sqlite/model/user_model.dart';
+import 'package:login_sqlite/external/database/bd_sqlite.dart';
 import 'package:login_sqlite/routes/view_routes.dart';
 
 class HomeLogin extends StatefulWidget {
@@ -59,24 +61,39 @@ class _HomeLoginState extends State<HomeLogin> {
                       top: 30, left: 150, right: 150, bottom: 30),
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        UserModel user = UserModel(
-                          userId: 'userId',
-                          userName: 'userName',
-                          userEmail: 'userEmail',
-                          userPassword: 'userPassword',
-                        );
                         // CRIPTOGRAFIA NA SENHA
                         var bytes = utf8.encode(_senhaController.text);
                         var hash = sha256.convert(bytes);
 
-                        var route = RouteSettings(
-                            name: RoutesApp.update, arguments: user);
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          RoutesApp.generateRoute(route),
-                          (route) => false,
+                        SqLiteDb db = SqLiteDb();
+
+                        await db
+                            .login(_loginController.text, hash.toString())
+                            .then(
+                          (value) {
+                            if (value != null) {
+                              var route = RouteSettings(
+                                name: RoutesApp.update,
+                                arguments: value,
+                              );
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                RoutesApp.generateRoute(route),
+                                (route) => false,
+                              );
+                            } else {
+                              MessageApp.toastMesssage(
+                                context,
+                                MessageApp.errorWrongLoginPassword,
+                              );
+                            }
+                          },
+                        ).catchError(
+                          (error) {
+                            log(error);
+                          },
                         );
                       }
                     },

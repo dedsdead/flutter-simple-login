@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:login_sqlite/routes/view_routes.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,

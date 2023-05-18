@@ -7,10 +7,10 @@ abstract class UserTableSchema {
 
   static String createUserTableScript() => '''
   CREATE TABLE $nameTable (
-    $userIdColumn TEEXT NOT NULL PRIMARY KEY,
-    $userNameColumn TEEXT NOT NULL,
-    $userEmailColumn TEEXT NOT NULL,
-    $userPasswordColumn TEEXT NOT NULL
+    $userIdColumn TEXT NOT NULL PRIMARY KEY,
+    $userNameColumn TEXT NOT NULL,
+    $userEmailColumn TEXT NOT NULL,
+    $userPasswordColumn TEXT NOT NULL
   )
   ''';
 }

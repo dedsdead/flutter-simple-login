@@ -3,19 +3,22 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 abstract class MessageApp {
   static const errorPasswordMismatch = 'Senha e Confirmação não conferem';
+  static const errorWrongLoginPassword = 'Login ou Senha incorretos';
+  static const confirmDeletion = 'Tem certeza que deseja excluir o Usuário?';
+
   static toastMesssage(
     BuildContext context,
     String message, {
     Color color = Colors.red,
     IconData icon = Icons.error,
+    void Function()? f,
   }) {
     FToast fToast = FToast();
     fToast.init(context);
     fToast.showToast(
       child: Container(
         padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 8,
+          horizontal: 10,
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -24,20 +27,21 @@ abstract class MessageApp {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Icon(
-              icon,
+            IconButton(
+              onPressed: f,
+              icon: Icon(icon),
               color: Colors.white,
-            ),
-            const SizedBox(
-              width: 10,
             ),
             Text(
               message,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: 14,
                 color: Colors.white,
               ),
+            ),
+            const SizedBox(
+              width: 15,
             ),
           ],
         ),

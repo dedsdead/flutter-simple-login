@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:login_sqlite/common/messages.dart';
 import 'package:login_sqlite/components/text_field.dart';
 import 'package:login_sqlite/components/user_header.dart';
+import 'package:login_sqlite/external/database/bd_sqlite.dart';
 import 'package:login_sqlite/model/user_model.dart';
 import 'package:login_sqlite/routes/view_routes.dart';
 
@@ -37,7 +39,6 @@ class _UpdateUserState extends State<UpdateUser> {
       _loginController.text = user.userId;
       _nomeController.text = user.userName;
       _emailController.text = user.userEmail;
-      _senhaController.text = user.userPassword;
     });
   }
 
@@ -52,7 +53,7 @@ class _UpdateUserState extends State<UpdateUser> {
     super.dispose();
   }
 
-  void _update() {
+  void _update() async {
     if (_formKey.currentState!.validate()) {
       if (_senhaController.text.trim() != _confirmaController.text.trim()) {
         MessageApp.toastMesssage(
@@ -64,17 +65,58 @@ class _UpdateUserState extends State<UpdateUser> {
         // CRIPTOGRAFIA NA SENHA
         var bytes = utf8.encode(_senhaController.text);
         var hash = sha256.convert(bytes);
-        const route = RouteSettings(name: RoutesApp.home);
-        Navigator.pushAndRemoveUntil(
-            context, RoutesApp.generateRoute(route), (route) => false);
+
+        UserModel user = UserModel(
+          userId: _loginController.text,
+          userName: _nomeController.text,
+          userEmail: _emailController.text,
+          userPassword: hash.toString(),
+        );
+
+        SqLiteDb db = SqLiteDb();
+
+        await db.updateUser(user).then(
+          (value) {
+            const route = RouteSettings(name: RoutesApp.home);
+            Navigator.pushAndRemoveUntil(
+              context,
+              RoutesApp.generateRoute(route),
+              (route) => false,
+            );
+          },
+        ).catchError(
+          (onError) {
+            log(onError);
+          },
+        );
       }
     }
   }
 
-  void _delete() {
-    const route = RouteSettings(name: RoutesApp.home);
-    Navigator.pushAndRemoveUntil(
-        context, RoutesApp.generateRoute(route), (route) => false);
+  void _delete() async {
+    MessageApp.toastMesssage(
+      context,
+      MessageApp.confirmDeletion,
+      icon: Icons.delete,
+      f: () async {
+        SqLiteDb db = SqLiteDb();
+
+        await db.deleteUser(user.userId).then(
+          (_) {
+            const route = RouteSettings(name: RoutesApp.home);
+            Navigator.pushAndRemoveUntil(
+              context,
+              RoutesApp.generateRoute(route),
+              (route) => false,
+            );
+          },
+        ).catchError(
+          (onError) {
+            log(onError);
+          },
+        );
+      },
+    );
   }
 
   @override
